@@ -1,0 +1,70 @@
+<!-- Le clic n'est qu'un raccourci souris pour focaliser la saisie ; le vrai
+     point d'interaction accessible est l'input ci-dessous (label + clavier). -->
+<div
+  class="terminal hud"
+  role="presentation"
+  [class.terminal--crash]="crashed()"
+  (click)="focusInput()"
+>
+  <div class="terminal__bar">
+    <span class="terminal__dot"></span>
+    <span class="terminal__dot"></span>
+    <span class="terminal__dot"></span>
+    <span class="terminal__title">{{ promptUser }} — baylox-sh</span>
+    <span class="terminal__badge">LIVE</span>
+  </div>
+
+  <div
+    class="terminal__output"
+    #output
+    role="log"
+    [attr.aria-label]="i18n.ui().terminalShell.outputAria"
+  >
+    @for (line of lines(); track $index) {
+      @switch (line.kind) {
+        @case ('cmd') {
+          <p class="terminal__line terminal__line--cmd">
+            <span class="terminal__prompt">{{ promptUser }}:~$</span> {{ line.text }}
+          </p>
+        }
+        @case ('ascii') {
+          <pre class="terminal__ascii">{{ line.text }}</pre>
+        }
+        @case ('help') {
+          <p class="terminal__line terminal__line--help">
+            <span class="terminal__cmd-name">{{ line.label }}</span
+            >{{ line.text }}
+          </p>
+        }
+        @case ('link') {
+          <p class="terminal__line">
+            <a class="terminal__link" [href]="line.url" target="_blank" rel="noopener noreferrer">{{
+              line.text
+            }}</a>
+          </p>
+        }
+        @default {
+          <p class="terminal__line" [class]="'terminal__line--' + line.kind">{{ line.text }}</p>
+        }
+      }
+    }
+
+    @if (booted()) {
+      <div class="terminal__input-row">
+        <span class="terminal__prompt">{{ promptUser }}:~$</span>
+        <input
+          #cmdInput
+          class="terminal__input"
+          type="text"
+          spellcheck="false"
+          autocomplete="off"
+          autocapitalize="off"
+          [attr.aria-label]="i18n.ui().terminalShell.inputAria"
+          (keydown)="onKeydown($event)"
+        />
+      </div>
+    } @else {
+      <p class="terminal__line terminal__line--muted terminal__boot-cursor">▊</p>
+    }
+  </div>
+</div>

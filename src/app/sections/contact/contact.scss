@@ -1,0 +1,70 @@
+.contact {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-block: clamp(24px, 4vw, 48px);
+}
+
+.contact__index {
+  font-family: var(--font-mono);
+  font-size: 14.5px;
+  color: var(--accent);
+}
+
+.contact__title {
+  margin-top: 16px;
+  font-family: var(--font-display);
+  font-size: clamp(24px, 4.2vw, 40px);
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.contact__text {
+  max-width: 54ch;
+  margin-top: 20px;
+  font-size: 16.5px;
+  color: var(--text-muted);
+}
+
+.contact__cta {
+  margin-top: 36px;
+  font-family: var(--font-mono);
+  font-size: 14.5px;
+}
+
+.contact__socials {
+  display: flex;
+  gap: 12px;
+  margin-top: 40px;
+}
+
+.contact__social {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border-strong);
+  clip-path: polygon(
+    10px 0,
+    100% 0,
+    100% calc(100% - 10px),
+    calc(100% - 10px) 100%,
+    0 100%,
+    0 10px
+  );
+  color: var(--text-muted);
+  transition:
+    color var(--transition),
+    border-color var(--transition),
+    background var(--transition),
+    transform var(--transition);
+
+  &:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    transform: translateY(-3px);
+  }
+}

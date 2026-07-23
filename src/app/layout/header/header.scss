@@ -1,0 +1,271 @@
+.header {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  z-index: 100;
+  height: var(--header-height);
+  transition:
+    background var(--transition),
+    border-color var(--transition),
+    box-shadow var(--transition);
+  border-bottom: 1px solid transparent;
+}
+
+.header--scrolled {
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom-color: var(--border);
+}
+
+.header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  height: 100%;
+}
+
+/* --- Logo --- */
+
+.header__logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.header__logo-mark {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 1.5px;
+  border: 1.5px solid var(--border-strong);
+  clip-path: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px);
+  box-shadow: 0 0 10px -3px var(--accent-glow);
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition);
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+  }
+
+  .header__logo:hover & {
+    border-color: var(--accent);
+    box-shadow: 0 0 14px -2px var(--accent-glow);
+  }
+}
+
+.header__logo-name {
+  font-size: 15px;
+  color: var(--text);
+}
+
+/* --- Navigation --- */
+
+.header__links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.header__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  transition:
+    color var(--transition),
+    background var(--transition),
+    text-shadow var(--transition);
+
+  &:hover {
+    color: var(--text);
+    background: var(--accent-soft);
+  }
+}
+
+.header__link--active {
+  color: var(--accent);
+  text-shadow: 0 0 12px var(--accent-glow);
+
+  &:hover {
+    color: var(--accent);
+  }
+}
+
+.header__link-index {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent);
+}
+
+/* --- Actions --- */
+
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.header__icon-btn {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  color: var(--text-muted);
+  transition:
+    color var(--transition),
+    background var(--transition),
+    filter var(--transition);
+
+  &:hover {
+    color: var(--accent);
+    background: var(--accent-soft);
+    filter: drop-shadow(0 0 8px var(--accent-glow));
+  }
+}
+
+.header__icon-btn--active {
+  color: var(--accent);
+  filter: drop-shadow(0 0 8px var(--accent-glow));
+}
+
+/* Bouton FR ⇄ EN : même gabarit que les boutons d'icônes, texte mono. */
+.header__lang {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+/* --- Burger (mobile) --- */
+
+.header__burger {
+  display: none;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+
+  span,
+  span::before,
+  span::after {
+    content: '';
+    display: block;
+    width: 20px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--text);
+    transition:
+      transform var(--transition),
+      opacity var(--transition);
+  }
+
+  span {
+    position: relative;
+
+    &::before,
+    &::after {
+      position: absolute;
+      left: 0;
+    }
+
+    &::before {
+      top: -6px;
+    }
+
+    &::after {
+      top: 6px;
+    }
+
+    &.open {
+      transform: rotate(45deg);
+
+      &::before {
+        transform: rotate(-90deg) translateX(-6px);
+      }
+
+      &::after {
+        opacity: 0;
+      }
+    }
+  }
+}
+
+/* Le bouton FR ⇄ EN ajoute ~44px aux actions : on resserre la nav avant
+   qu'elle ne déborde, sans passer au burger. */
+@media (max-width: 1150px) {
+  .header__link {
+    padding: 8px 9px;
+    font-size: 13.5px;
+    white-space: nowrap;
+  }
+
+  .header__inner {
+    gap: 12px;
+  }
+}
+
+@media (max-width: 860px) {
+  .header__burger {
+    display: grid;
+  }
+
+  .header__nav {
+    position: fixed;
+    top: var(--header-height);
+    inset-inline: 0;
+    padding: 12px 24px 24px;
+    background: color-mix(in srgb, var(--bg) 94%, transparent);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    transform: translateY(-12px);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      transform var(--transition),
+      opacity var(--transition);
+  }
+
+  .header__nav--open {
+    transform: none;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .header__links {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .header__link {
+    padding: 12px 14px;
+    font-size: 16px;
+  }
+}
+
+/* Très petits écrans : le bouton de langue s'ajoute aux actions — on masque
+   le nom du logo (la marque JD reste) et on resserre les boutons. */
+@media (max-width: 480px) {
+  .header__logo-name {
+    display: none;
+  }
+
+  .header__actions {
+    gap: 2px;
+  }
+}

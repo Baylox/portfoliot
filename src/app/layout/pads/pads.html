@@ -1,0 +1,58 @@
+@if (pads.open()) {
+  <div class="pads hud" role="dialog" [attr.aria-label]="t().dialogAria">
+    <div class="pads__bar">
+      <span class="pads__title">{{ t().title }}</span>
+      @if (grid()) {
+        <span class="pads__stations">
+          @for (station of stations; track station) {
+            <button
+              class="pads__station"
+              [class.pads__station--active]="audio.station() === station"
+              type="button"
+              (click)="tune(station)"
+            >
+              {{ station }}
+            </button>
+          }
+        </span>
+      }
+      <button
+        class="pads__close"
+        type="button"
+        (click)="pads.close()"
+        [attr.aria-label]="t().close"
+      >
+        ×
+      </button>
+    </div>
+
+    @if (grid(); as g) {
+      <div class="pads__grid">
+        @for (inst of instruments; track inst) {
+          <span class="pads__label">{{ inst }}</span>
+          @for (step of steps; track step) {
+            <button
+              type="button"
+              class="pads__cell"
+              [class.pads__cell--active]="g[inst][step] !== null"
+              [class.pads__cell--beat]="step % 4 === 0"
+              [class.pads__cell--now]="step === playhead()"
+              [style.--vel]="g[inst][step] ?? 1"
+              (click)="toggle(inst, step)"
+              [attr.aria-pressed]="g[inst][step] !== null"
+              [attr.aria-label]="t().stepAria(inst, step + 1)"
+            ></button>
+          }
+        }
+      </div>
+      <p class="pads__hint">{{ t().hintBefore }}<code>score</code>{{ t().hintEnd }}</p>
+    } @else {
+      <div class="pads__empty">
+        <p>{{ t().empty }}</p>
+        <button class="btn btn--primary" type="button" (click)="start()">
+          {{ t().startSynth }}
+        </button>
+      </div>
+    }
+  </div>
+}

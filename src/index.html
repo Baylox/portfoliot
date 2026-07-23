@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Joris Dupont-Alamo — Développeur Back-end</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Portfolio de Joris Dupont-Alamo, développeur back-end Symfony, orienté architecture logicielle : Clean Architecture, DDD, SOLID. Spring Boot, NestJS, Angular."
+    />
+    <meta name="author" content="Joris Dupont-Alamo" />
+    <link rel="canonical" href="https://baylox.github.io/portfoliot/" />
+    <link rel="alternate" hreflang="fr" href="https://baylox.github.io/portfoliot/" />
+    <link rel="alternate" hreflang="en" href="https://baylox.github.io/portfoliot/?lang=en" />
+    <link rel="alternate" hreflang="x-default" href="https://baylox.github.io/portfoliot/" />
+    <meta property="og:title" content="Joris Dupont-Alamo — Développeur Back-end" />
+    <meta
+      property="og:description"
+      content="Backend first : Symfony, Spring Boot, NestJS. Clean Architecture, DDD, SOLID."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://baylox.github.io/portfoliot/" />
+    <meta property="og:image" content="https://baylox.github.io/portfoliot/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Joris Dupont-Alamo",
+        "jobTitle": "Développeur back-end",
+        "url": "https://baylox.github.io/portfoliot/",
+        "sameAs": ["https://github.com/Baylox", "https://www.linkedin.com/in/joris-dupont-alamo/"],
+        "knowsAbout": ["Symfony", "PHP", "Spring Boot", "NestJS", "Clean Architecture", "DDD"]
+      }
+    </script>
+    <meta name="theme-color" content="#020409" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <script>
+      // Applique la couleur du néon (cyan/orange) avant le rendu pour éviter
+      // tout flash. ?accent=orange permet de partager le contre-circuit.
+      (function () {
+        try {
+          var accent =
+            new URLSearchParams(location.search).get('accent') || localStorage.getItem('accent');
+          document.documentElement.setAttribute(
+            'data-accent',
+            accent === 'orange' ? 'orange' : 'cyan',
+          );
+        } catch (e) {
+          document.documentElement.setAttribute('data-accent', 'cyan');
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <app-root></app-root>
+    <noscript>
+      <style>
+        .ns {
+          max-width: 680px;
+          margin: 0 auto;
+          padding: 56px 24px 72px;
+          font-family:
+            system-ui,
+            -apple-system,
+            'Segoe UI',
+            sans-serif;
+          color: #d9f1fb;
+          background: #020409;
+          min-height: 100vh;
+          box-sizing: border-box;
+          line-height: 1.6;
+        }
+        .ns__tag {
+          font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+          font-size: 13px;
+          color: #00e5ff;
+          letter-spacing: 0.04em;
+        }
+        .ns h1 {
+          margin: 8px 0 4px;
+          font-size: clamp(30px, 7vw, 46px);
+          letter-spacing: 0.02em;
+        }
+        .ns__role {
+          margin: 0 0 24px;
+          font-size: 18px;
+          color: #00e5ff;
+        }
+        .ns p {
+          color: #a9cadc;
+        }
+        .ns h2 {
+          margin: 34px 0 12px;
+          padding-bottom: 8px;
+          border-bottom: 1px solid rgba(0, 229, 255, 0.25);
+          font-size: 16px;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          color: #00e5ff;
+        }
+        .ns ul {
+          margin: 0;
+          padding-left: 20px;
+        }
+        .ns li {
+          margin-bottom: 6px;
+          color: #a9cadc;
+        }
+        .ns a {
+          color: #9ffbff;
+        }
+        .ns__note {
+          margin-top: 40px;
+          padding: 12px 16px;
+          border: 1px solid rgba(0, 229, 255, 0.25);
+          font-size: 14px;
+          color: #7b9db1;
+        }
+      </style>
+      <main class="ns">
+        <p class="ns__tag">// transmission entrante — canal sécurisé</p>
+        <h1>Joris Dupont-Alamo</h1>
+        <p class="ns__role">Développeur back-end</p>
+        <p>
+          Je conçois des applications robustes et maintenables avec Symfony, Spring Boot et NestJS.
+          Cap sur l'architecture logicielle : Clean Architecture, DDD, principes SOLID.
+        </p>
+
+        <h2>Parcours</h2>
+        <ul>
+          <li>
+            Développeur back-end Symfony — alternance, Ministère de l'Intérieur (Lyon), depuis sept.
+            2025
+          </li>
+          <li>Concepteur développeur d'applications — RNCP niveau 6 (Bac+3), Dawan, 2025–2026</li>
+          <li>Développeur Web &amp; Mobile — RNCP niveau 5 (Bac+2), Studi, 2023–2025</li>
+        </ul>
+
+        <h2>Projets</h2>
+        <ul>
+          <li>
+            <a href="https://github.com/Baylox/taskio">taskio</a> — gestion de projets collaborative
+            (Symfony, Voters, 570+ commits)
+          </li>
+          <li>
+            <a href="https://github.com/Baylox/alda-support">alda-support</a> — CRM sur-mesure
+            (Symfony 7.4, architecture par domaine)
+          </li>
+          <li>
+            <a href="https://github.com/Baylox/sentinel-py">sentinel-py</a> — scanner de
+            vulnérabilités modulaire (Python)
+          </li>
+        </ul>
+
+        <h2>Contact</h2>
+        <ul>
+          <li>GitHub : <a href="https://github.com/Baylox">github.com/Baylox</a></li>
+          <li>
+            LinkedIn :
+            <a href="https://www.linkedin.com/in/joris-dupont-alamo/">Joris Dupont-Alamo</a>
+          </li>
+          <li>Email : jdupontalamo [at] gmail [dot] com</li>
+        </ul>
+
+        <p class="ns__note">
+          Ce portfolio est une application interactive (terminal, séquenceur audio, fond animé).
+          Activez JavaScript pour l'expérience complète.
+        </p>
+      </main>
+    </noscript>
+  </body>
+</html>

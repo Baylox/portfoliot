@@ -1,0 +1,105 @@
+<header class="header" [class.header--scrolled]="scrolled()">
+  <div class="container header__inner">
+    <a routerLink="/" class="header__logo" [title]="t().backToTop" (click)="closeMenu()">
+      <span class="header__logo-mark">
+        <img src="avatar.jpg" alt="" width="36" height="36" />
+      </span>
+      <span class="header__logo-name">{{ profile.alias }}</span>
+    </a>
+
+    <nav class="header__nav" [class.header__nav--open]="menuOpen()" [attr.aria-label]="t().mainNav">
+      <ol class="header__links">
+        @for (link of navLinks(); track link.fragment) {
+          <li>
+            <a
+              class="header__link"
+              [class.header__link--active]="activeSection() === link.fragment"
+              routerLink="/"
+              [fragment]="link.fragment"
+              (click)="closeMenu()"
+            >
+              <span class="header__link-index">0{{ $index + 1 }}.</span>
+              {{ link.label }}
+            </a>
+          </li>
+        }
+        <li>
+          <a
+            class="header__link"
+            routerLink="/lab"
+            routerLinkActive="header__link--active"
+            (click)="closeMenu()"
+          >
+            <span class="header__link-index">//</span>
+            {{ t().labLink }}
+          </a>
+        </li>
+      </ol>
+    </nav>
+
+    <div class="header__actions">
+      <a
+        class="header__icon-btn"
+        [href]="profile.githubUrl"
+        target="_blank"
+        rel="noopener noreferrer"
+        [attr.aria-label]="t().githubProfile"
+      >
+        <app-icon name="github" />
+      </a>
+
+      <button
+        class="header__icon-btn"
+        type="button"
+        (click)="theme.toggle()"
+        [attr.aria-label]="theme.accent() === 'cyan' ? t().neonToOrange : t().neonToCyan"
+        [title]="t().neonTitle"
+      >
+        <app-icon name="disc" />
+      </button>
+
+      <button
+        class="header__icon-btn"
+        [class.header__icon-btn--active]="audio.playing()"
+        type="button"
+        (click)="audio.toggle()"
+        (pointerenter)="audio.preload()"
+        [attr.aria-label]="audio.playing() ? t().soundMute : t().soundEnable"
+        [title]="t().soundTitle"
+      >
+        <app-icon [name]="audio.playing() ? 'sound-on' : 'sound-off'" />
+      </button>
+
+      <button
+        class="header__icon-btn"
+        [class.header__icon-btn--active]="padsPanel.open()"
+        type="button"
+        (click)="padsPanel.toggle()"
+        [attr.aria-label]="t().sequencerAria"
+        [title]="t().sequencerTitle"
+      >
+        <app-icon name="grid" />
+      </button>
+
+      <button
+        class="header__icon-btn header__lang"
+        type="button"
+        (click)="i18n.toggle()"
+        [attr.aria-label]="t().switchLang"
+        [title]="t().switchLang"
+      >
+        {{ targetLang() }}
+      </button>
+
+      <button
+        class="header__burger"
+        type="button"
+        (click)="toggleMenu()"
+        [attr.aria-expanded]="menuOpen()"
+        [attr.aria-label]="t().openMenu"
+      >
+        <span [class.open]="menuOpen()"></span>
+      </button>
+    </div>
+  </div>
+</header>

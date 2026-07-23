@@ -1,0 +1,70 @@
+﻿<section class="section" id="projets">
+  <div class="container">
+    <div class="section-heading" appReveal>
+      <span class="section-heading__index">04.</span>
+      <h2>{{ t().title }}</h2>
+    </div>
+
+    <div class="projects">
+      @for (project of featured(); track project.name) {
+        <a
+          class="project hud"
+          [appReveal]="($index % 3) * 100"
+          [href]="project.githubUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <div class="project__top">
+            <span class="project__folder">
+              <app-icon name="folder" [size]="24" />
+            </span>
+            <span class="project__external">
+              <app-icon name="external" [size]="18" />
+            </span>
+          </div>
+
+          <span class="project__kind">{{ project.kind }}</span>
+          <h3 class="project__name">{{ project.name }}</h3>
+          <p class="project__description">{{ project.description }}</p>
+
+          <ul class="project__tags">
+            @for (tag of project.tags; track tag) {
+              <li>{{ tag }}</li>
+            }
+          </ul>
+        </a>
+      }
+    </div>
+
+    <h3 class="projects__more-title" appReveal>{{ t().othersTitle }}</h3>
+
+    <ul class="projects-list hud" appReveal>
+      @for (project of others(); track project.name) {
+        <li>
+          <a
+            class="projects-list__item"
+            [href]="project.githubUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="projects-list__name">{{ project.name }}</span>
+            <span class="projects-list__description">{{ project.description }}</span>
+            <span class="projects-list__tags">
+              @for (tag of project.tags; track tag) {
+                <span>{{ tag }}</span>
+              }
+            </span>
+            <app-icon name="external" [size]="16" />
+          </a>
+        </li>
+      }
+    </ul>
+
+    <div class="projects__cta" appReveal>
+      <a class="btn btn--ghost" [href]="githubUrl" target="_blank" rel="noopener noreferrer">
+        <app-icon name="github" [size]="18" />
+        {{ t().cta }}
+      </a>
+    </div>
+  </div>
+</section>

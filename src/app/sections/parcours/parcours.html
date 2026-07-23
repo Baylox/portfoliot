@@ -1,0 +1,26 @@
+<section class="section" id="parcours">
+  <div class="container">
+    <div class="section-heading" appReveal>
+      <span class="section-heading__index">03.</span>
+      <h2>{{ t().title }}</h2>
+    </div>
+
+    <div class="parcours hud" appReveal>
+      @for (step of steps(); track $index) {
+        <article class="parcours__step" [appReveal]="$index * 100">
+          <span
+            class="parcours__marker"
+            [class.parcours__marker--formation]="step.type === 'formation'"
+            aria-hidden="true"
+          ></span>
+          <p class="parcours__periode">{{ step.periode }}</p>
+          <div class="parcours__body">
+            <h3>{{ step.titre }}</h3>
+            <p class="parcours__lieu">{{ step.lieu }}</p>
+            <p class="parcours__detail">{{ step.detail }}</p>
+          </div>
+        </article>
+      }
+    </div>
+  </div>
+</section>

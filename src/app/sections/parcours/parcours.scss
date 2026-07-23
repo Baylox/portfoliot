@@ -1,0 +1,84 @@
+// Timeline verticale : une ligne, des losanges, des dates en mono — sobre,
+// posée sur un panneau HUD pour rester lisible par-dessus le fond animé.
+.parcours {
+  position: relative;
+  max-width: 780px;
+  padding: 30px 34px;
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: blur(5px);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 38px;
+    bottom: 38px;
+    left: 38px;
+    width: 1px;
+    background: linear-gradient(180deg, var(--accent) 0%, var(--border) 45%, transparent 100%);
+    opacity: 0.55;
+  }
+}
+
+.parcours__step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 20px;
+  padding: 0 0 34px 30px;
+
+  &:last-child {
+    padding-bottom: 0;
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}
+
+.parcours__marker {
+  position: absolute;
+  top: 5px;
+  left: 0;
+  width: 9px;
+  height: 9px;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent-glow);
+  transform: rotate(45deg);
+
+  // Formations : losange creux — l'expérience est pleine.
+  &--formation {
+    background: transparent;
+    border: 1px solid var(--accent);
+    box-shadow: none;
+  }
+}
+
+.parcours__periode {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+
+.parcours__body {
+  h3 {
+    margin: 0 0 4px;
+    font-size: 16.5px;
+    font-weight: 700;
+  }
+}
+
+.parcours__lieu {
+  margin: 0 0 6px;
+  font-size: 13.5px;
+  color: var(--accent);
+}
+
+.parcours__detail {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-muted);
+}

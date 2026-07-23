@@ -1,0 +1,128 @@
+.lab {
+  padding-block: clamp(110px, 14vw, 150px) clamp(56px, 8vw, 90px);
+
+  // Colonne de lecture centrée : le contenu long se lit au milieu de la
+  // page, pas dans une colonne collée à gauche du container large.
+  .container {
+    max-width: 880px;
+  }
+}
+
+.lab__lede {
+  max-width: 62ch;
+  margin: 0 0 clamp(36px, 5vw, 52px);
+  font-size: 16.5px;
+  color: var(--text-muted);
+}
+
+.lab__study {
+  padding: clamp(24px, 4vw, 38px);
+  margin-bottom: clamp(28px, 4vw, 44px);
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: blur(5px);
+}
+
+.lab__title {
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-size: clamp(18px, 2.4vw, 23px);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-shadow: 0 0 14px var(--accent-glow);
+}
+
+.lab__intro {
+  margin: 0 0 22px;
+  font-size: 15.5px;
+  color: var(--text-muted);
+}
+
+.lab__section {
+  margin-bottom: 20px;
+
+  h4 {
+    margin: 0 0 6px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+
+    &::before {
+      content: '▸ ';
+      color: var(--accent);
+    }
+  }
+
+  p {
+    margin: 0;
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: var(--text-muted);
+  }
+}
+
+.lab__code {
+  margin: 12px 0 0;
+  padding: 14px 16px;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--text);
+  background: color-mix(in srgb, var(--bg-alt) 85%, transparent);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--accent);
+
+  code {
+    font: inherit;
+  }
+
+  // Coloration syntaxique maison — palette néon du site. ::ng-deep car le
+  // HTML est injecté via [innerHTML] et n'a pas l'attribut de scope Angular.
+  ::ng-deep {
+    .tok-kw {
+      color: var(--accent);
+      text-shadow: 0 0 8px var(--accent-glow);
+    }
+    .tok-class {
+      color: var(--accent-strong);
+    }
+    .tok-string {
+      color: var(--accent-alt); // le circuit adverse : chaînes bien distinctes
+    }
+    .tok-var {
+      color: var(--text);
+    }
+    .tok-attr,
+    .tok-annot {
+      color: var(--accent-alt);
+      opacity: 0.85;
+    }
+    .tok-num {
+      color: var(--accent-strong);
+    }
+    .tok-comment {
+      color: var(--text-faint);
+      font-style: italic;
+    }
+  }
+}
+
+.lab__highlight {
+  margin: 22px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--accent);
+
+  &::before {
+    content: '// ';
+    opacity: 0.7;
+  }
+}
+
+.lab__back {
+  margin-top: 8px;
+}

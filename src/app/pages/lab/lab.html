@@ -1,0 +1,30 @@
+<main class="lab">
+  <div class="container">
+    <div class="section-heading" appReveal>
+      <span class="section-heading__index">//</span>
+      <h2>{{ t().title }}</h2>
+    </div>
+    <p class="lab__lede" appReveal>{{ t().lede }}</p>
+
+    @for (study of t().studies; track study.title) {
+      <article class="lab__study hud" [appReveal]="100">
+        <h3 class="lab__title">{{ study.title }}</h3>
+        <p class="lab__intro">{{ study.intro }}</p>
+
+        @for (section of study.sections; track section.heading) {
+          <section class="lab__section">
+            <h4>{{ section.heading }}</h4>
+            <p>{{ section.body }}</p>
+            @if (section.code) {
+              <pre class="lab__code"><code [innerHTML]="colorize(section.code)"></code></pre>
+            }
+          </section>
+        }
+
+        <p class="lab__highlight">{{ study.highlight }}</p>
+      </article>
+    }
+
+    <a class="btn btn--ghost lab__back" routerLink="/">{{ t().back }}</a>
+  </div>
+</main>

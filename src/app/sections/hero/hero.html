@@ -1,0 +1,43 @@
+<section class="hero" id="accueil">
+  <div class="container hero__inner">
+    <div class="hero__intro">
+      <p class="hero__greeting">{{ t().greeting }}</p>
+
+      <h1 class="hero__name glitch" [attr.data-text]="profile.name">{{ profile.name }}</h1>
+
+      <p class="hero__headline">{{ i18n.ui().profile.headline }}</p>
+      <p class="hero__tagline">{{ i18n.ui().profile.tagline }}</p>
+
+      <div class="hero__actions">
+        <a class="btn btn--primary" href="#projets">
+          {{ t().viewProjects }}
+          <app-icon name="arrow-down" [size]="16" />
+        </a>
+        <a class="btn btn--ghost" href="#contact">{{ t().getInTouch }}</a>
+      </div>
+
+      <div class="hero__socials">
+        @for (link of socialLinks; track link.label) {
+          <a
+            class="hero__social"
+            [href]="link.url"
+            target="_blank"
+            rel="noopener noreferrer"
+            [attr.aria-label]="link.label"
+          >
+            <app-icon [name]="link.icon" [size]="18" />
+            {{ link.label }}
+          </a>
+        }
+      </div>
+    </div>
+
+    <div class="hero__terminal">
+      <app-terminal />
+      <p class="hero__hint">
+        {{ t().hintBefore }}<code>help</code>{{ t().hintMid1 }}<code>synth</code>{{ t().hintMid2
+        }}<code>score</code>{{ t().hintEnd }}
+      </p>
+    </div>
+  </div>
+</section>

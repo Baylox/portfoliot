@@ -1,0 +1,18 @@
+<footer class="footer">
+  <div class="container">
+    <p class="footer__proof">
+      {{ t().proof }}
+      <a href="https://github.com/Baylox/portfoliot" target="_blank" rel="noopener noreferrer">{{
+        t().proofLink
+      }}</a
+      >.
+    </p>
+    <div class="footer__inner">
+      <p>
+        © {{ year }} {{ profile.name }} — {{ t().designedWith }}
+        <a [href]="profile.githubUrl" target="_blank" rel="noopener noreferrer">Angular</a>
+      </p>
+      <p class="footer__mono">{{ t().endOfTransmission }}</p>
+    </div>
+  </div>
+</footer>

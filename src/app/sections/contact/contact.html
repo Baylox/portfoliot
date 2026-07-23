@@ -1,0 +1,26 @@
+﻿<section class="section" id="contact">
+  <div class="container contact" appReveal>
+    <span class="contact__index">{{ t().index }}</span>
+    <h2 class="contact__title">{{ t().title }}</h2>
+    <p class="contact__text">{{ t().text }}</p>
+
+    <a class="btn btn--primary contact__cta" [href]="'mailto:' + profile.email">
+      <app-icon name="mail" [size]="18" />
+      {{ profile.email }}
+    </a>
+
+    <div class="contact__socials">
+      @for (link of socialLinks; track link.label) {
+        <a
+          class="contact__social"
+          [href]="link.url"
+          target="_blank"
+          rel="noopener noreferrer"
+          [attr.aria-label]="link.label"
+        >
+          <app-icon [name]="link.icon" [size]="20" />
+        </a>
+      }
+    </div>
+  </div>
+</section>

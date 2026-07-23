@@ -1,0 +1,27 @@
+<section class="section" id="a-propos">
+  <div class="container">
+    <div class="section-heading" appReveal>
+      <span class="section-heading__index">01.</span>
+      <h2>{{ t().title }}</h2>
+    </div>
+
+    <div class="about">
+      <div class="about__text" appReveal>
+        @for (paragraph of paragraphs(); track $index) {
+          <p>{{ paragraph }}</p>
+        }
+      </div>
+
+      <aside class="about__aside" appReveal="150">
+        <div class="about__card hud">
+          @for (item of t().highlights; track item.label) {
+            <div class="about__highlight">
+              <span class="about__value">{{ item.value }}</span>
+              <span class="about__label">{{ item.label }}</span>
+            </div>
+          }
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>

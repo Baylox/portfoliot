@@ -1,0 +1,55 @@
+.footer {
+  border-top: 1px solid var(--border);
+  padding-block: 28px;
+}
+
+// La ligne de conversion : le ludique du site relu comme preuve d'ingénierie.
+.footer__proof {
+  margin: 0 0 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13.5px;
+  color: var(--text-muted);
+
+  a {
+    color: var(--text-muted);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--border-strong);
+    transition: color var(--transition);
+
+    &:hover {
+      color: var(--accent);
+      text-decoration-color: var(--accent);
+    }
+  }
+}
+
+.footer__inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 13.5px;
+  color: var(--text-faint);
+
+  a {
+    color: var(--text-muted);
+    // Souligné : un lien doit se distinguer autrement que par sa couleur (a11y).
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--border-strong);
+    transition: color var(--transition);
+
+    &:hover {
+      color: var(--accent);
+      text-decoration-color: var(--accent);
+    }
+  }
+}
+
+.footer__mono {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+}

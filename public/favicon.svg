@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" fill="#020409"/>
+  <path d="M10 2h44l8 8v44l-8 8H10l-8-8V10z" fill="none" stroke="#00e5ff" stroke-opacity="0.5" stroke-width="2.5"/>
+  <text x="32" y="42" text-anchor="middle" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="26" font-weight="700" fill="#00e5ff">JD</text>
+</svg>
