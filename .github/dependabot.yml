@@ -1,0 +1,35 @@
+version: 2
+updates:
+  # Dépendances npm du portfolio — regroupées pour limiter le bruit de PR.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      angular:
+        patterns:
+          - '@angular/*'
+          - '@angular-eslint/*'
+          - 'angular-eslint'
+      dev-tooling:
+        patterns:
+          - 'eslint*'
+          - '@eslint/*'
+          - 'prettier'
+          - 'typescript'
+          - 'vitest'
+          - 'jsdom'
+    labels:
+      - dependencies
+
+  # Actions utilisées par le workflow CI / GitHub Pages.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    labels:
+      - dependencies
+      - github-actions

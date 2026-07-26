@@ -2,6 +2,21 @@
 <html lang="fr">
   <head>
     <meta charset="utf-8" />
+    <!--
+      Content-Security-Policy (durcissement). Contraintes du portfolio :
+      - script-src : bundles Angular servis en 'self' + le hash du <script>
+        d'amorçage de l'accent (plus bas). ⚠ Si ce script inline change (même
+        un espace via Prettier), recalculer le hash sha256 sinon la page casse.
+      - worker-src blob: : le moteur audio crée son horloge dans un Worker blob
+        (src/app/core/ambient/ambient-engine.ts).
+      - style-src 'unsafe-inline' : styles injectés par Angular + <style> du
+        <noscript>. img-src data: blob: : canvas / assets encodés.
+      Aucune ressource tierce (CDN, fonts, API) n'est chargée : default-src 'self'.
+    -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'sha256-YNK2EUMtBAn1MPsRQtO0VSBGxOAdk3clzElIpLoFnD4='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; worker-src 'self' blob:; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'"
+    />
     <title>Joris Dupont-Alamo — Développeur Back-end</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

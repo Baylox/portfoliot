@@ -24,6 +24,10 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      # Bloque le déploiement si une vulnérabilité high/critical est connue.
+      # Les alertes moderate/low restent visibles sans casser la CI ; Dependabot
+      # (.github/dependabot.yml) ouvre les PR de mise à jour chaque semaine.
+      - run: npm audit --audit-level=high
       - run: npm run format:check
       - run: npm run lint
       - run: npm test -- --watch=false
