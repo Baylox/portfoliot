@@ -30,6 +30,8 @@ interface Tracer {
   maxLen: number;
   /** Territoire exclusif de la moto — les murs ne se croisent jamais. */
   bounds: { x1: number; x2: number; z1: number; z2: number };
+  /** Index du secteur — sert à esquiver les murs des colocataires (overdrive). */
+  sector: number;
 }
 
 interface Star {
@@ -79,7 +81,10 @@ const FAR = 120;
 const BOUND_X = 70;
 const FOCAL = 320;
 const CAM_HEIGHT = 5;
-const BASE_CYCLES = 6;
+/** Trois motos suffisent — au-delà, la scène grouille au lieu de respirer. */
+const BASE_CYCLES = 3;
+/** Marge minimale devant la tête pour continuer ou tourner (unités monde). */
+const TURN_CLEARANCE = 1.2;
 
 /**
  * Fond animé plein écran : grille en perspective qui défile, horizon
@@ -202,12 +207,11 @@ export class NeonBackground {
     window.addEventListener('resize', resize);
     this.destroyRef.onDestroy(() => window.removeEventListener('resize', resize));
 
-    // Sur mobile, trois traceurs suffisent — répartis en diagonale sur la
-    // grille des secteurs (batterie et GPU modestes obligent).
-    const count = this.width < 768 ? 3 : BASE_CYCLES;
+    // Répartis en diagonale sur la grille des secteurs : deux dans la
+    // couleur du circuit, un rival — chacun chez soi.
     const spread = [0, 4, 2];
-    for (let i = 0; i < count; i++) {
-      this.cycles.push(this.createCycle(i % 3 === 2, false, count === 3 ? spread[i] : i));
+    for (let i = 0; i < BASE_CYCLES; i++) {
+      this.cycles.push(this.createCycle(i % 3 === 2, false, spread[i]));
     }
 
     if (this.reducedMotion) {
@@ -319,14 +323,16 @@ export class NeonBackground {
       corners: [{ x, z }],
       maxLen: 30 + Math.random() * 20,
       bounds,
+      sector,
     };
   }
 
   private spawnBurst(): void {
-    // Un renfort par secteur — l'overdrive reste rangé (et sobre sur mobile).
-    const count = this.width < 768 ? 3 : 6;
-    for (let i = 0; i < count; i++) {
-      this.cycles.push(this.createCycle(i % 2 === 0, true, count === 3 ? i * 2 : i));
+    // Trois renforts éphémères dans les secteurs laissés libres par les
+    // motos permanentes — l'overdrive double la scène sans jamais croiser
+    // les murs existants.
+    for (let i = 0; i < 3; i++) {
+      this.cycles.push(this.createCycle(i % 2 === 0, true, i * 2 + 1));
     }
   }
 
@@ -351,9 +357,12 @@ export class NeonBackground {
 
       const { x1, x2, z1, z2 } = cycle.bounds;
       const outOfBounds = cycle.x < x1 || cycle.x > x2 || cycle.z < z1 || cycle.z > z2;
-      if (cycle.nextTurnIn <= 0 || outOfBounds) {
-        this.turn(cycle);
-        cycle.nextTurnIn = 2 + Math.random() * 4;
+      const blocked = this.freeAhead(cycle, cycle.dx, cycle.dz) < TURN_CLEARANCE;
+      if (cycle.nextTurnIn <= 0 || outOfBounds || blocked) {
+        const turned = this.turn(cycle, outOfBounds);
+        // Virage impossible proprement : on garde le cap et on retente vite —
+        // le rognage du mur libère le passage en continu.
+        cycle.nextTurnIn = turned ? 2 + Math.random() * 4 : 0.4;
       }
       this.trimWall(cycle);
     }
@@ -396,27 +405,101 @@ export class NeonBackground {
     }
   }
 
-  private turn(cycle: Tracer): void {
-    // Virage à 90° : le point de pivot devient un coin du mur de lumière.
+  /**
+   * Virage à 90° : le point de pivot devient un coin du mur de lumière —
+   * mais jamais à travers un mur. Chaque côté est mesuré (distance libre
+   * jusqu'au bord ou au premier mur du secteur) : si les deux sont dégagés,
+   * cap vers le cœur du territoire avec la part de hasard d'origine ; sinon
+   * le côté le plus libre gagne. Retourne false quand aucun virage propre
+   * n'est possible (`force` — sortie de territoire — passe outre).
+   */
+  private turn(cycle: Tracer, force: boolean): boolean {
     const { x1, x2, z1, z2 } = cycle.bounds;
     cycle.x = Math.max(x1, Math.min(x2, cycle.x));
     cycle.z = Math.max(z1, Math.min(z2, cycle.z));
-    cycle.corners.push({ x: cycle.x, z: cycle.z });
 
-    // Nouvelle direction orientée vers le cœur du territoire.
-    if (cycle.dx !== 0) {
-      cycle.dz = cycle.z > (z1 + z2) / 2 ? -1 : 1;
-      if (Math.random() < 0.45) {
-        cycle.dz *= -1;
-      }
-      cycle.dx = 0;
-    } else {
-      cycle.dx = cycle.x > (x1 + x2) / 2 ? -1 : 1;
-      if (Math.random() < 0.45) {
-        cycle.dx *= -1;
-      }
-      cycle.dz = 0;
+    const options: [number, number][] =
+      cycle.dx !== 0
+        ? [
+            [0, 1],
+            [0, -1],
+          ]
+        : [
+            [1, 0],
+            [-1, 0],
+          ];
+    const free = options.map(([dx, dz]) => this.freeAhead(cycle, dx, dz));
+    if (!force && Math.max(free[0], free[1]) < TURN_CLEARANCE) {
+      return false;
     }
+
+    let pick: number;
+    if (Math.min(free[0], free[1]) > 8) {
+      const toCenter =
+        cycle.dx !== 0 ? (cycle.z > (z1 + z2) / 2 ? -1 : 1) : (cycle.x > (x1 + x2) / 2 ? -1 : 1);
+      const heading = Math.random() < 0.45 ? -toCenter : toCenter;
+      pick = options.findIndex(([dx, dz]) => (cycle.dx !== 0 ? dz : dx) === heading);
+    } else {
+      pick = free[0] >= free[1] ? 0 : 1;
+    }
+
+    cycle.corners.push({ x: cycle.x, z: cycle.z });
+    [cycle.dx, cycle.dz] = options[pick];
+    return true;
+  }
+
+  /**
+   * Distance libre depuis la tête dans une direction : bord du territoire ou
+   * premier mur rencontré dans le secteur — le sien (coins uniquement, le
+   * segment vivant est derrière la tête) et ceux des colocataires d'overdrive
+   * (tête comprise). Tout est axis-aligné : de simples tests d'intervalles.
+   */
+  private freeAhead(cycle: Tracer, dx: number, dz: number): number {
+    const { x1, x2, z1, z2 } = cycle.bounds;
+    let best =
+      dx > 0 ? x2 - cycle.x
+      : dx < 0 ? cycle.x - x1
+      : dz > 0 ? z2 - cycle.z
+      : cycle.z - z1;
+
+    const alongX = dx !== 0;
+    const sign = alongX ? dx : dz;
+    const headMain = alongX ? cycle.x : cycle.z;
+    const headLat = alongX ? cycle.z : cycle.x;
+
+    for (const other of this.cycles) {
+      if (other.sector !== cycle.sector) {
+        continue;
+      }
+      const pts =
+        other === cycle ? other.corners : [...other.corners, { x: other.x, z: other.z }];
+      for (let i = 1; i < pts.length; i++) {
+        const a = pts[i - 1];
+        const b = pts[i];
+        const aMain = alongX ? a.x : a.z;
+        const bMain = alongX ? b.x : b.z;
+        const aLat = alongX ? a.z : a.x;
+        const bLat = alongX ? b.z : b.x;
+        if (Math.abs(aMain - bMain) < 1e-6) {
+          // Segment perpendiculaire à la course : bloque si notre ligne le couvre.
+          if (headLat >= Math.min(aLat, bLat) - 1e-6 && headLat <= Math.max(aLat, bLat) + 1e-6) {
+            const t = (aMain - headMain) * sign;
+            if (t > 1e-6 && t < best) {
+              best = t;
+            }
+          }
+        } else if (Math.abs(aLat - headLat) < 1e-6) {
+          // Segment colinéaire sur notre ligne : la plus proche extrémité devant.
+          for (const main of [aMain, bMain]) {
+            const t = (main - headMain) * sign;
+            if (t > 1e-6 && t < best) {
+              best = t;
+            }
+          }
+        }
+      }
+    }
+    return best;
   }
 
   /** Rogne la queue du mur pour qu'il garde une longueur constante. */
