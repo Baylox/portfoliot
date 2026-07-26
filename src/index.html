@@ -4,14 +4,24 @@
     <meta charset="utf-8" />
     <!--
       Content-Security-Policy (durcissement). Contraintes du portfolio :
-      - script-src : bundles Angular servis en 'self' + le hash du <script>
-        d'amorçage de l'accent (plus bas). ⚠ Si ce script inline change (même
-        un espace via Prettier), recalculer le hash sha256 sinon la page casse.
+      - script-src : bundles Angular servis en 'self' + le hash du script
+        d'amorçage de l'accent (plus bas). Si ce script inline change (même un
+        espace via Prettier), le hash sha256 doit être recalculé, sinon le
+        navigateur le bloque : npm run csp:check donne le hash attendu et la CI
+        échoue avant le déploiement.
       - worker-src blob: : le moteur audio crée son horloge dans un Worker blob
         (src/app/core/ambient/ambient-engine.ts).
-      - style-src 'unsafe-inline' : styles injectés par Angular + <style> du
-        <noscript>. img-src data: blob: : canvas / assets encodés.
-      Aucune ressource tierce (CDN, fonts, API) n'est chargée : default-src 'self'.
+      - style-src 'unsafe-inline' : styles injectés par Angular et styles inline
+        du repli sans JavaScript. img-src data: blob: : canvas / assets encodés.
+      - Pas de gestionnaire d'événement inline (onload=...) : un hash ne les
+        couvre pas, il faudrait 'unsafe-hashes'. C'est pourquoi l'optimisation
+        inlineCritical d'Angular est désactivée dans angular.json — elle
+        générait un lien de style differé (media="print" puis onload qui bascule
+        en media="all") dont le blocage laissait la page sans feuille de style
+        en production.
+      Aucune ressource tierce (CDN, polices, API) n'est chargée : default-src 'self'.
+      Les noms de balises sont écrits sans chevrons dans ce commentaire : une
+      regex qui cherche des balises y matcherait sinon le commentaire lui-même.
     -->
     <meta
       http-equiv="Content-Security-Policy"

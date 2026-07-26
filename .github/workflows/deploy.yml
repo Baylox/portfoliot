@@ -37,6 +37,11 @@ jobs:
       - run: npm run csp:check
       - run: npm test -- --watch=false
       - run: npx ng build --base-href /portfoliot/
+      # Revérifie la CSP sur l'artefact réellement déployé : le build réécrit
+      # index.html et peut y injecter ce que la source ne contient pas (c'est
+      # ainsi qu'un onload= généré par inlineCritical a failli partir en prod,
+      # où il aurait laissé la page sans feuille de style).
+      - run: npm run csp:check:dist
       # SPA fallback : GitHub Pages sert 404.html pour les routes inconnues
       # (/lab en URL directe) — l'app démarre et le Router prend le relais.
       - run: cp dist/portfolio/browser/index.html dist/portfolio/browser/404.html

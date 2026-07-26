@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
- * Garde-fou CSP : vérifie que chaque script inline de src/index.html est bien
- * autorisé par son empreinte sha256 dans la directive script-src.
+ * Garde-fou CSP : vérifie qu'une page est réellement compatible avec sa propre
+ * Content-Security-Policy — scripts inline autorisés par empreinte sha256, et
+ * absence de gestionnaire d'événement inline.
  *
  * Pourquoi : la CSP autorise le script d'amorçage de l'accent par son hash,
  * pas par 'unsafe-inline'. Le hash porte sur les octets exacts du script —
@@ -9,13 +10,19 @@
  * Sans garde-fou, la casse est silencieuse au build et ne se voit qu'à
  * l'exécution (script bloqué → flash de couleur + violation en console).
  *
- * Usage : node scripts/check-csp-hash.mjs   (ou npm run csp:check)
+ * À vérifier sur DEUX fichiers, car le build réécrit la page :
+ *   node scripts/check-csp-hash.mjs                                 (source)
+ *   node scripts/check-csp-hash.mjs dist/portfolio/browser/index.html (artefact)
+ * Ne valider que la source est un angle mort : c'est ainsi qu'un
+ * onload="this.media='all'" généré par l'optimisation inlineCritical d'Angular
+ * a failli partir en production, où il aurait laissé la page sans styles.
+ *
  * Sortie : 0 si tout concorde, 1 sinon, avec le hash attendu à recopier.
  */
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 
-const FICHIER = 'src/index.html';
+const FICHIER = process.argv[2] ?? 'src/index.html';
 
 /** Hash tel que l'attend une CSP : sha256 des octets UTF-8, en base64. */
 function empreinte(contenu) {
@@ -41,9 +48,9 @@ if (html.includes('\r\n')) {
   );
 }
 
-// 2. Neutralise les commentaires HTML avant toute recherche de <script> : le
-//    commentaire qui documente la CSP contient lui-même le mot « <script> »
-//    et ferait matcher une regex naïve sur le mauvais bloc.
+// 2. Neutralise les commentaires HTML avant TOUTE recherche de balise. Un
+//    commentaire qui documente la CSP finit toujours par citer des noms de
+//    balises ou d'attributs ; sans ce filtrage, l'analyse se piège elle-même.
 const sansCommentaires = html.replace(/<!--[\s\S]*?-->/g, '');
 
 // 3. Scripts inline exécutables = balise <script> sans aucun attribut.
@@ -76,7 +83,25 @@ inlines.forEach((contenu, i) => {
   }
 });
 
-// 6. Hash déclaré qui ne correspond plus à rien : reste d'une ancienne version.
+// 6. Gestionnaires d'événements inline : un hash ne les couvre PAS. Sous une
+//    script-src sans 'unsafe-inline' ni 'unsafe-hashes', ils sont bloqués.
+//    C'est le piège qui a failli passer : l'optimisation inlineCritical
+//    d'Angular génère un onload qui active la feuille de style principale ;
+//    bloqué, la page s'affiche sans styles en production.
+const toleranceInline =
+  scriptSrc.includes("'unsafe-inline'") || scriptSrc.includes("'unsafe-hashes'");
+if (!toleranceInline) {
+  for (const m of sansCommentaires.matchAll(/\son([a-z]+)\s*=\s*["'][^"']*["']/gi)) {
+    erreurs.push(
+      `Gestionnaire d'événement inline « ${m[0].trim().slice(0, 60)} » dans ${FICHIER}.\n` +
+        `  script-src l'autorise par hash uniquement avec 'unsafe-hashes' — il sera bloqué.\n` +
+        `  Si c'est un onload de feuille de style, c'est l'optimisation inlineCritical\n` +
+        `  d'Angular : la désactiver dans angular.json (optimization.styles.inlineCritical).`,
+    );
+  }
+}
+
+// 7. Hash déclaré qui ne correspond plus à rien : reste d'une ancienne version.
 for (const d of declares) {
   if (!calcules.includes(d)) {
     avertissements.push(
@@ -85,7 +110,7 @@ for (const d of declares) {
   }
 }
 
-// 7. Signale un script inline porteur d'attributs qui aurait aussi besoin d'un
+// 8. Signale un script inline porteur d'attributs qui aurait aussi besoin d'un
 //    hash (type="module" par exemple) — ld+json et src="…" sont légitimes.
 for (const [, attrs] of sansCommentaires.matchAll(/<script\s+([^>]*)>/g)) {
   const a = attrs.toLowerCase();
@@ -110,5 +135,6 @@ if (erreurs.length > 0) {
 }
 
 console.log(
-  `✔ Garde-fou CSP : ${inlines.length} script(s) inline, ${declares.length} hash(es) déclaré(s) — tout concorde.`,
+  `✔ Garde-fou CSP (${FICHIER}) : ${inlines.length} script(s) inline, ` +
+    `${declares.length} hash(es) déclaré(s), aucun gestionnaire inline — tout concorde.`,
 );

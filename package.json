@@ -10,7 +10,8 @@
     "lint": "ng lint",
     "format": "prettier --write \"src/**/*.{ts,html,scss,json}\"",
     "format:check": "prettier --check \"src/**/*.{ts,html,scss,json}\"",
-    "csp:check": "node scripts/check-csp-hash.mjs"
+    "csp:check": "node scripts/check-csp-hash.mjs",
+    "csp:check:dist": "node scripts/check-csp-hash.mjs dist/portfolio/browser/index.html"
   },
   "private": true,
   "packageManager": "npm@10.9.7",
