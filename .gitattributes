@@ -1,0 +1,27 @@
+# Fins de ligne normalisées : LF dans le dépôt ET à la sortie (checkout).
+#
+# Ce n'est pas cosmétique ici. La CSP de src/index.html autorise le script
+# d'amorçage inline par son empreinte sha256 (script-src 'sha256-…'). Le hash
+# porte sur les octets exacts du script : un checkout en CRLF — le défaut de
+# Git sous Windows avec core.autocrlf=true — changerait ces octets, le hash ne
+# correspondrait plus et le navigateur bloquerait le script (flash de couleur
+# au chargement + violation CSP en console). eol=lf rend le hash stable sur
+# toutes les plateformes. Le garde-fou scripts/check-csp-hash.mjs le vérifie.
+* text=auto eol=lf
+
+# Binaires : jamais de conversion de fins de ligne (les corromprait).
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.avif binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.eot binary
+*.mp3 binary
+*.wav binary
+*.pdf binary

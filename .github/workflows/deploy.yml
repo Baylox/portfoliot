@@ -30,6 +30,11 @@ jobs:
       - run: npm audit --audit-level=high
       - run: npm run format:check
       - run: npm run lint
+      # La CSP autorise le script d'amorçage inline par son hash sha256 : ce
+      # garde-fou échoue si le script a changé (retouche, reflow Prettier,
+      # checkout CRLF) sans que le hash soit mis à jour. Sans lui, la casse
+      # ne se verrait qu'à l'exécution, dans le navigateur.
+      - run: npm run csp:check
       - run: npm test -- --watch=false
       - run: npx ng build --base-href /portfoliot/
       # SPA fallback : GitHub Pages sert 404.html pour les routes inconnues
