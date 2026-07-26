@@ -2,9 +2,12 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  ElementRef,
+  afterRenderEffect,
   computed,
   inject,
   signal,
+  viewChild,
 } from '@angular/core';
 import { AmbientAudioService } from '../../core/ambient-audio.service';
 import { LanguageService } from '../../core/i18n/language.service';
@@ -29,6 +32,10 @@ export class Pads {
   protected readonly i18n = inject(LanguageService);
   protected readonly t = computed(() => this.i18n.ui().pads);
   private readonly destroyRef = inject(DestroyRef);
+
+  private readonly dialog = viewChild<ElementRef<HTMLElement>>('dialog');
+  /** Élément qui avait le focus avant l'ouverture — on le lui rend à la fermeture. */
+  private lastFocused: HTMLElement | null = null;
 
   protected readonly instruments = LIVE_PATTERNS;
   protected readonly stations = STATIONS;
@@ -68,6 +75,55 @@ export class Pads {
       this.version.update((v) => v + 1);
     }, 60);
     this.destroyRef.onDestroy(() => clearInterval(timer));
+
+    // Modale accessible : à l'ouverture, on mémorise le focus courant puis on
+    // pose le focus sur le panneau ; à la fermeture, on le rend au déclencheur.
+    afterRenderEffect(() => {
+      const open = this.pads.open();
+      const el = this.dialog()?.nativeElement;
+      if (open && el) {
+        this.lastFocused = document.activeElement as HTMLElement | null;
+        el.focus();
+      } else if (!open && this.lastFocused) {
+        this.lastFocused.focus();
+        this.lastFocused = null;
+      }
+    });
+  }
+
+  /** Piège de focus : Tab / Shift+Tab bouclent à l'intérieur de la modale. */
+  protected onKeydown(event: KeyboardEvent): void {
+    if (event.key !== 'Tab') {
+      return; // Échap est géré par le binding host du composant.
+    }
+    const el = this.dialog()?.nativeElement;
+    if (!el) {
+      return;
+    }
+    const items = this.focusable(el);
+    if (items.length === 0) {
+      event.preventDefault();
+      el.focus();
+      return;
+    }
+    const first = items[0];
+    const last = items[items.length - 1];
+    const active = document.activeElement;
+    if (event.shiftKey && (active === first || active === el)) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && active === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
+  /** Éléments réellement focalisables et visibles dans la modale. */
+  private focusable(root: HTMLElement): HTMLElement[] {
+    const nodes = root.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), [href], input, [tabindex]:not([tabindex="-1"])',
+    );
+    return Array.from(nodes).filter((n) => n.offsetParent !== null);
   }
 
   protected toggle(inst: LivePattern, step: number): void {

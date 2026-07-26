@@ -71,6 +71,8 @@ export class Terminal {
   protected readonly promptUser = PROMPT_USER;
 
   private vuTimer?: ReturnType<typeof setInterval>;
+  /** Minuteurs de boot/crash en cours — purgés à chaque relance et à la destruction. */
+  private pendingTimers = new Set<ReturnType<typeof setTimeout>>();
 
   private readonly inputRef = viewChild.required<ElementRef<HTMLInputElement>>('cmdInput');
   private readonly outputRef = viewChild.required<ElementRef<HTMLElement>>('output');
@@ -119,6 +121,26 @@ export class Terminal {
     });
 
     afterNextRender(() => this.boot());
+
+    // Un seul point de nettoyage pour tous les minuteurs du composant : les
+    // handlers ne sont plus empilés sur DestroyRef à chaque boot/vu/rm.
+    this.destroyRef.onDestroy(() => {
+      this.clearPending();
+      clearInterval(this.vuTimer);
+    });
+  }
+
+  /** Enregistre un setTimeout pour qu'il soit purgeable en lot. */
+  private track(timer: ReturnType<typeof setTimeout>): void {
+    this.pendingTimers.add(timer);
+  }
+
+  /** Annule et oublie tous les minuteurs de boot/crash en attente. */
+  private clearPending(): void {
+    for (const timer of this.pendingTimers) {
+      clearTimeout(timer);
+    }
+    this.pendingTimers.clear();
   }
 
   protected focusInput(): void {
@@ -156,6 +178,9 @@ export class Terminal {
   }
 
   private boot(recovered = false): void {
+    // Un reboot (après rm -rf) ne doit pas laisser vivre les minuteurs du boot
+    // précédent : on repart d'une ardoise propre.
+    this.clearPending();
     const t = this.i18n.term();
     const bootLines: TerminalLine[] = [
       ...(recovered ? [{ kind: 'error' as const, text: t.boot.recovered }] : []),
@@ -166,6 +191,7 @@ export class Terminal {
     bootLines.forEach((line, i) => {
       const timer = setTimeout(
         () => {
+          this.pendingTimers.delete(timer);
           this.push(line);
           if (i === bootLines.length - 1) {
             this.booted.set(true);
@@ -173,7 +199,7 @@ export class Terminal {
         },
         350 + i * 420,
       );
-      this.destroyRef.onDestroy(() => clearTimeout(timer));
+      this.track(timer);
     });
   }
 
@@ -517,7 +543,8 @@ export class Terminal {
         this.stopVu(); // la ligne a disparu (clear) : on s'arrête sans bruit
       }
     }, 90);
-    this.destroyRef.onDestroy(() => clearInterval(this.vuTimer));
+    // Pas de onDestroy empilé ici : le nettoyage global (constructeur) coupe
+    // vuTimer à la destruction, et stopVu() s'en charge en cours de route.
   }
 
   private stopVu(message?: string): void {
@@ -539,22 +566,24 @@ export class Terminal {
     this.stopVu();
     const doomed = ['/bin', '/usr', '/etc', '/var', '/home/joris', '/boot'];
     doomed.forEach((path, i) => {
-      const timer = setTimeout(
-        () => this.push({ kind: 'error', text: t.rmRemoving(path) }),
-        i * 150,
-      );
-      this.destroyRef.onDestroy(() => clearTimeout(timer));
+      const timer = setTimeout(() => {
+        this.pendingTimers.delete(timer);
+        this.push({ kind: 'error', text: t.rmRemoving(path) });
+      }, i * 150);
+      this.track(timer);
     });
-    const crash = setTimeout(() => this.crashed.set(true), 950);
+    const crash = setTimeout(() => {
+      this.pendingTimers.delete(crash);
+      this.crashed.set(true);
+    }, 950);
     const reboot = setTimeout(() => {
+      this.pendingTimers.delete(reboot);
       this.crashed.set(false);
       this.lines.set([]);
-      this.boot(true);
+      this.boot(true); // boot() purge d'abord les minuteurs restants
     }, 2500);
-    this.destroyRef.onDestroy(() => {
-      clearTimeout(crash);
-      clearTimeout(reboot);
-    });
+    this.track(crash);
+    this.track(reboot);
   }
 
   private cmdOverdrive(): void {

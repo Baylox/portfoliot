@@ -1,5 +1,13 @@
 @if (pads.open()) {
-  <div class="pads hud" role="dialog" [attr.aria-label]="t().dialogAria">
+  <div
+    class="pads hud"
+    #dialog
+    role="dialog"
+    aria-modal="true"
+    tabindex="-1"
+    [attr.aria-label]="t().dialogAria"
+    (keydown)="onKeydown($event)"
+  >
     <div class="pads__bar">
       <span class="pads__title">{{ t().title }}</span>
       @if (grid()) {
