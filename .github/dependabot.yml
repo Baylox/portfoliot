@@ -23,6 +23,18 @@ updates:
           - 'jsdom'
     labels:
       - dependencies
+    # Les majeures d'Angular et de TypeScript vont ensemble (Angular impose la
+    # plage TS supportée) : elles passent par `ng update` et ses migrations,
+    # pas par Dependabot. Les minor/patch continuent d'arriver normalement.
+    ignore:
+      - dependency-name: '@angular/*'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'angular-eslint'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@angular-eslint/*'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'typescript'
+        update-types: ['version-update:semver-major']
 
   # Actions utilisées par le workflow CI / GitHub Pages.
   - package-ecosystem: github-actions
