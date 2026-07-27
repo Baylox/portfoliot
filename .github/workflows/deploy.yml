@@ -1,8 +1,12 @@
 name: CI & Déploiement GitHub Pages
 
+# Le job build tourne aussi sur les PR (Dependabot inclus) : sans lui, une PR
+# n'a aucun check et on ne découvre la casse qu'après merge. Seul le push sur
+# main déploie.
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -10,8 +14,10 @@ permissions:
   pages: write
   id-token: write
 
+# Groupe par ref : deux PR ne s'annulent pas entre elles ; sur main, un push
+# annule toujours la chaîne build+deploy précédente (une seule à la fois).
 concurrency:
-  group: pages
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -50,6 +56,7 @@ jobs:
           path: dist/portfolio/browser
 
   deploy:
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     environment:
