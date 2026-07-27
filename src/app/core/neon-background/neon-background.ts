@@ -436,7 +436,7 @@ export class NeonBackground {
     let pick: number;
     if (Math.min(free[0], free[1]) > 8) {
       const toCenter =
-        cycle.dx !== 0 ? (cycle.z > (z1 + z2) / 2 ? -1 : 1) : (cycle.x > (x1 + x2) / 2 ? -1 : 1);
+        cycle.dx !== 0 ? (cycle.z > (z1 + z2) / 2 ? -1 : 1) : cycle.x > (x1 + x2) / 2 ? -1 : 1;
       const heading = Math.random() < 0.45 ? -toCenter : toCenter;
       pick = options.findIndex(([dx, dz]) => (cycle.dx !== 0 ? dz : dx) === heading);
     } else {
@@ -456,11 +456,7 @@ export class NeonBackground {
    */
   private freeAhead(cycle: Tracer, dx: number, dz: number): number {
     const { x1, x2, z1, z2 } = cycle.bounds;
-    let best =
-      dx > 0 ? x2 - cycle.x
-      : dx < 0 ? cycle.x - x1
-      : dz > 0 ? z2 - cycle.z
-      : cycle.z - z1;
+    let best = dx > 0 ? x2 - cycle.x : dx < 0 ? cycle.x - x1 : dz > 0 ? z2 - cycle.z : cycle.z - z1;
 
     const alongX = dx !== 0;
     const sign = alongX ? dx : dz;
@@ -471,8 +467,7 @@ export class NeonBackground {
       if (other.sector !== cycle.sector) {
         continue;
       }
-      const pts =
-        other === cycle ? other.corners : [...other.corners, { x: other.x, z: other.z }];
+      const pts = other === cycle ? other.corners : [...other.corners, { x: other.x, z: other.z }];
       for (let i = 1; i < pts.length; i++) {
         const a = pts[i - 1];
         const b = pts[i];
