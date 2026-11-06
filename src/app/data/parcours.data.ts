@@ -16,10 +16,18 @@ export const PARCOURS: ParcoursStep[] = [
     type: 'experience',
   },
   {
+    periode: '2026 — 2028',
+    titre: 'Programme Grande École — Master of Engineering, RNCP niveau 7 (Bac+5)',
+    lieu: 'SUPINFO, Lyon — en alternance',
+    detail:
+      'Filière Génie logiciel et Architecture Cloud. Titre « Architecte des systèmes d’information » en préparation.',
+    type: 'formation',
+  },
+  {
     periode: '2025 — 2026',
     titre: 'Concepteur développeur d’applications — RNCP niveau 6 (Bac+3)',
     lieu: 'Dawan — en alternance',
-    detail: 'Titre en cours de préparation.',
+    detail: 'Titre obtenu.',
     type: 'formation',
   },
   {

@@ -280,10 +280,17 @@ export const UI_EN: UiStrings = {
         detail: 'Designing and evolving a line-of-business application, from domain layer to UI.',
       },
       {
+        periode: '2026 — 2028',
+        titre: 'Grande École Programme — Master of Engineering, RNCP Level 7 (master’s level)',
+        lieu: 'SUPINFO, Lyon — work-study program',
+        detail:
+          'Software Engineering & Cloud Architecture track. “Information Systems Architect” degree in progress.',
+      },
+      {
         periode: '2025 — 2026',
         titre: 'Application Design & Development — RNCP Level 6 (bachelor’s level)',
         lieu: 'Dawan — work-study program',
-        detail: 'Degree in progress.',
+        detail: 'Degree obtained.',
       },
       {
         periode: '2023 — 2025',
